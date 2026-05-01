@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+motor
+dnspython
+pydantic[email]
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]
+apscheduler
