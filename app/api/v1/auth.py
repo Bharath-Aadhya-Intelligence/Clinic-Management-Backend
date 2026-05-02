@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status, Form
 from datetime import timedelta
 from ...core.security import verify_password, create_access_token
 from ...core.config import settings
@@ -9,10 +8,12 @@ from ...models.admin import Token
 router = APIRouter()
 
 @router.post("/login", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    # We use form_data.username to carry the email
-    admin = await admin_service.get_by_email(form_data.username)
-    if not admin or not verify_password(form_data.password, admin["hashed_password"]):
+async def login_for_access_token(
+    email: str = Form(...),
+    password: str = Form(...)
+):
+    admin = await admin_service.get_by_email(email)
+    if not admin or not verify_password(password, admin["hashed_password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
