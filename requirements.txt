@@ -4,6 +4,8 @@ motor
 dnspython
 pydantic[email]
 python-dotenv
+bcrypt==3.2.2
+python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
 apscheduler
