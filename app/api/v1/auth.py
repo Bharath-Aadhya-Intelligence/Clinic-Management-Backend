@@ -10,11 +10,12 @@ router = APIRouter()
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    admin = await admin_service.get_by_username(form_data.username)
+    # We use form_data.username to carry the email
+    admin = await admin_service.get_by_email(form_data.username)
     if not admin or not verify_password(form_data.password, admin["hashed_password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
