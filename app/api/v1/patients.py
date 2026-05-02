@@ -7,6 +7,10 @@ from ...api.deps import get_current_admin
 
 router = APIRouter()
 
+@router.get("/meta/referral-sources", response_model=List[str])
+async def get_referral_sources():
+    return [source.value for source in ReferralSource]
+
 @router.get("/", response_model=List[PatientOut])
 async def list_patients(visit_date: Optional[date] = None, current_admin: dict = Depends(get_current_admin)):
     if visit_date:

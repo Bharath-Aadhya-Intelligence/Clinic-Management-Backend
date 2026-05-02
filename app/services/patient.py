@@ -9,13 +9,22 @@ class PatientService(BaseService):
     async def create_patient(self, data: dict):
         data["created_at"] = datetime.utcnow()
         data["updated_at"] = datetime.utcnow()
-        # Initialize 3 empty appointments if not provided
-        if "appointments" not in data:
-            data["appointments"] = [
-                {"appointment_number": 1, "status": "Scheduled"},
-                {"appointment_number": 2, "status": "Scheduled"},
-                {"appointment_number": 3, "status": "Scheduled"}
-            ]
+        
+        # Extract treatment dates if provided
+        second_date = data.pop("second_treatment_date", None)
+        third_date = data.pop("third_treatment_date", None)
+        
+        # Initialize 3 appointments
+        # Appointment 1 uses the main visit_date
+        visit_date = data.get("visit_date")
+        if isinstance(visit_date, date):
+            visit_date = datetime.combine(visit_date, datetime.min.time())
+            
+        data["appointments"] = [
+            {"appointment_number": 1, "date": visit_date, "status": "Scheduled"},
+            {"appointment_number": 2, "date": datetime.combine(second_date, datetime.min.time()) if second_date else None, "status": "Scheduled"},
+            {"appointment_number": 3, "date": datetime.combine(third_date, datetime.min.time()) if third_date else None, "status": "Scheduled"}
+        ]
         return await self.create(data)
 
     async def update_patient(self, id: str, data: dict):

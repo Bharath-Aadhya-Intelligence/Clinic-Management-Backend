@@ -5,10 +5,9 @@ from enum import Enum
 from .base import PyObjectId
 
 class ReferralSource(str, Enum):
-    INSTAGRAM = "Instagram"
-    FACEBOOK = "Facebook"
-    YOUTUBE = "YouTube"
     GOOGLE = "Google"
+    INSTAGRAM = "Instagram"
+    YOUTUBE = "YouTube"
     OLD_PATIENT = "Old Patient"
     OTHER = "Other"
 
@@ -32,7 +31,8 @@ class PatientBase(BaseModel):
     referral_source: ReferralSource = ReferralSource.OTHER
 
 class PatientCreate(PatientBase):
-    pass
+    second_treatment_date: Optional[date] = None
+    third_treatment_date: Optional[date] = None
 
 class PatientUpdate(BaseModel):
     name: Optional[str] = None
