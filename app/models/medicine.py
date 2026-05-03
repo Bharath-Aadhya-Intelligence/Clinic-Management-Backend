@@ -28,5 +28,6 @@ class MedicineInDB(MedicineBase):
 class MedicineOut(MedicineBase):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     image_url: Optional[str] = None
+    image_filename: Optional[str] = None
     created_at: datetime
     updated_at: datetime
