@@ -17,8 +17,9 @@ class PatientService(BaseService):
         # Initialize 3 appointments
         # Appointment 1 uses the main visit_date
         visit_date = data.get("visit_date")
-        if isinstance(visit_date, date):
+        if isinstance(visit_date, date) and not isinstance(visit_date, datetime):
             visit_date = datetime.combine(visit_date, datetime.min.time())
+            data["visit_date"] = visit_date
             
         data["appointments"] = [
             {"appointment_number": 1, "date": visit_date, "status": "Scheduled"},

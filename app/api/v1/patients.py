@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Optional
 from datetime import date
 from ...services.patient import patient_service
-from ...models.patient import PatientOut, PatientCreate, PatientUpdate
+from ...models.patient import PatientOut, PatientCreate, PatientUpdate, ReferralSource
 from ...api.deps import get_current_admin
 
 router = APIRouter()
