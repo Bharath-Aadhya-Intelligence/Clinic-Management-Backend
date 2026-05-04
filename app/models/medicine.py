@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from datetime import datetime
-from typing import Optional
-from .base import PyObjectId
+from typing import Optional, List
+from .base import PyObjectId, MongoBaseModel
 
-class MedicineBase(BaseModel):
+class MedicineBase(MongoBaseModel):
     name: str
     price: float
     description: Optional[str] = None

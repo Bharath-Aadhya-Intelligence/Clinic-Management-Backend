@@ -15,6 +15,9 @@ class BaseService:
         cursor = self.collection.find(query)
         return await cursor.to_list(length=1000)
 
+    async def get_count(self, query: Dict = {}) -> int:
+        return await self.collection.count_documents(query)
+
     async def get_by_id(self, id: str) -> Optional[Dict]:
         if not ObjectId.is_valid(id):
             return None

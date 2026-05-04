@@ -1,15 +1,15 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from datetime import datetime
 from typing import Optional, List
 from enum import Enum
-from .base import PyObjectId
+from .base import PyObjectId, MongoBaseModel
 
 class OrderStatus(str, Enum):
     PENDING = "Pending"
     CONTACTED = "Contacted"
     COMPLETED = "Completed"
 
-class OrderBase(BaseModel):
+class OrderBase(MongoBaseModel):
     customer_name: str
     phone_number: str
     address: str
