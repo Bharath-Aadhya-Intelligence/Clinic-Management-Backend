@@ -4,6 +4,7 @@ from ...services.patient import patient_service
 from ...services.medicine import medicine_service
 from ...services.order import order_service
 from ...api.deps import get_current_admin
+from ...models.patient import PatientOut
 
 router = APIRouter()
 
@@ -27,7 +28,7 @@ async def get_monthly_stats(current_admin: dict = Depends(get_current_admin)):
         "daily_breakdown": breakdown
     }
 
-@router.get("/reminders")
+@router.get("/reminders", response_model=Dict[str, Any])
 async def get_appointment_reminders(current_admin: dict = Depends(get_current_admin)):
     reminders = await patient_service.get_reminders_for_tomorrow()
-    return reminders
+    return {"reminders": reminders}
