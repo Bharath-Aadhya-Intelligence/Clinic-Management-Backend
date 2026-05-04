@@ -18,7 +18,7 @@ class AppointmentStatus(str, Enum):
 
 class Appointment(BaseModel):
     appointment_number: int  # 1, 2, or 3
-    date: Optional[date] = None
+    date: Optional[datetime] = None
     time: Optional[str] = None
     status: AppointmentStatus = AppointmentStatus.SCHEDULED
 

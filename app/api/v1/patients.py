@@ -25,7 +25,7 @@ async def get_patient(id: str, current_admin: dict = Depends(get_current_admin))
     return patient
 
 @router.post("/", response_model=PatientOut, status_code=status.HTTP_201_CREATED)
-async def create_patient(patient: PatientCreate, current_admin: dict = Depends(get_current_admin)):
+async def create_patient(patient: PatientCreate):
     return await patient_service.create_patient(patient.dict())
 
 @router.patch("/{id}", response_model=PatientOut)
