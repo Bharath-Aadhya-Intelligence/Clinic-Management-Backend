@@ -44,7 +44,7 @@ class PatientUpdate(BaseModel):
     appointments: Optional[List[Appointment]] = None
 
 class PatientInDB(PatientBase):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[PyObjectId] = Field(alias="_id", serialization_alias="id", default=None)
     appointments: List[Appointment] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)

@@ -21,7 +21,7 @@ class OrderCreate(OrderBase):
     pass
 
 class OrderInDB(OrderBase):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[PyObjectId] = Field(alias="_id", serialization_alias="id", default=None)
     order_date: datetime = Field(default_factory=datetime.utcnow)
     status: OrderStatus = OrderStatus.PENDING
 

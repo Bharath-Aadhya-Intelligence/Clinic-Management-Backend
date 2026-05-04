@@ -19,14 +19,14 @@ class MedicineUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 class MedicineInDB(MedicineBase):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[PyObjectId] = Field(alias="_id", serialization_alias="id", default=None)
     image_path: Optional[str] = None
     image_filename: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 class MedicineOut(MedicineBase):
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    id: Optional[PyObjectId] = Field(alias="_id", serialization_alias="id", default=None)
     image_url: Optional[str] = None
     image_filename: Optional[str] = None
     created_at: datetime
