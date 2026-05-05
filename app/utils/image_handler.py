@@ -1,7 +1,31 @@
 from PIL import Image
 import os
 import uuid
+import base64
+from io import BytesIO
 from ..core.config import settings
+
+def get_image_base64(image_file) -> str:
+    """
+    Compresses an image to max 400x400px with 70% quality and returns as base64.
+    """
+    # Open image
+    img = Image.open(image_file.file)
+    
+    # Convert to RGB if necessary
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+    
+    # Resize maintaining aspect ratio (smaller for DB storage)
+    img.thumbnail((400, 400), Image.LANCZOS)
+    
+    # Save to buffer
+    buffered = BytesIO()
+    img.save(buffered, format="JPEG", quality=70, optimize=True)
+    
+    # Encode to base64
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    return f"data:image/jpeg;base64,{img_str}"
 
 def compress_image(image_file, filename: str) -> str:
     """

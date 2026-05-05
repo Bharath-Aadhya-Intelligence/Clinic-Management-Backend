@@ -3,7 +3,7 @@ from typing import List, Optional
 from ...services.medicine import medicine_service
 from ...models.medicine import MedicineOut, MedicineCreate, MedicineUpdate
 from ...api.deps import get_current_admin
-from ...utils.image_handler import compress_image, delete_image
+from ...utils.image_handler import compress_image, delete_image, get_image_base64
 import json
 
 router = APIRouter()
@@ -30,8 +30,10 @@ async def create_medicine_admin(
     image: UploadFile = File(...),
     current_admin: dict = Depends(get_current_admin)
 ):
-    # Compress and save image
+    # Compress and save image (local file)
     image_filename = compress_image(image, image.filename)
+    # Get base64 for persistence
+    image_data = get_image_base64(image)
     
     medicine_data = {
         "name": name,
@@ -39,6 +41,7 @@ async def create_medicine_admin(
         "description": description,
         "image_filename": image_filename,
         "image_path": f"static/medicines/{image_filename}",
+        "image_data": image_data,
         "is_active": True
     }
     
@@ -69,10 +72,14 @@ async def update_medicine_admin(
         # Delete old image if it exists
         if existing.get("image_filename"):
             delete_image(existing["image_filename"])
-        # Save new image
+        # Save new image (local file)
         image_filename = compress_image(image, image.filename)
+        # Get base64 for persistence
+        image_data = get_image_base64(image)
+        
         update_data["image_filename"] = image_filename
         update_data["image_path"] = f"static/medicines/{image_filename}"
+        update_data["image_data"] = image_data
         
     success = await medicine_service.update_medicine(id, update_data)
     if not success:
