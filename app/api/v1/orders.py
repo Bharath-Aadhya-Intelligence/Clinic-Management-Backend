@@ -14,6 +14,11 @@ async def place_order(order: OrderCreate):
 async def list_orders_admin(current_admin: dict = Depends(get_current_admin)):
     return await order_service.get_all()
 
+@router.delete("/admin/clear-all", status_code=status.HTTP_204_NO_CONTENT)
+async def clear_all_orders_admin(current_admin: dict = Depends(get_current_admin)):
+    await order_service.delete_all()
+    return None
+
 @router.get("/admin/{id}", response_model=OrderOut)
 async def get_order_admin(id: str, current_admin: dict = Depends(get_current_admin)):
     order = await order_service.get_by_id(id)

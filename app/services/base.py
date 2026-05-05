@@ -41,3 +41,7 @@ class BaseService:
             return False
         result = await self.collection.delete_one({"_id": ObjectId(id)})
         return result.deleted_count > 0
+
+    async def delete_all(self, query: Dict = {}) -> int:
+        result = await self.collection.delete_many(query)
+        return result.deleted_count
