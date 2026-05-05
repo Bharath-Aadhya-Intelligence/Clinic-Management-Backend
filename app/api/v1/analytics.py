@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from typing import List, Dict, Any
+from datetime import datetime
 from ...services.patient import patient_service
 from ...services.medicine import medicine_service
 from ...services.order import order_service
+from ...services.report import report_service
 from ...api.deps import get_current_admin
 from ...models.patient import PatientOut
 
@@ -32,3 +34,14 @@ async def get_monthly_stats(current_admin: dict = Depends(get_current_admin)):
 async def get_appointment_reminders(current_admin: dict = Depends(get_current_admin)):
     reminders = await patient_service.get_reminders_for_tomorrow()
     return {"reminders": reminders}
+
+@router.get("/reports/orders")
+async def get_order_report(current_admin: dict = Depends(get_current_admin)):
+    csv_data = await report_service.generate_orders_csv()
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=order_report_{datetime.now().strftime('%Y%m%d')}.csv"
+        }
+    )
