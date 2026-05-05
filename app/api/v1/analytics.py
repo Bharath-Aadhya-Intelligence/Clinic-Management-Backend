@@ -13,10 +13,12 @@ async def get_today_stats(current_admin: dict = Depends(get_current_admin)):
     visit_count = await patient_service.get_today_visit_count()
     med_count = await medicine_service.get_count()
     order_count = await order_service.get_count({"status": "Pending"})
+    reminders = await patient_service.get_reminders_for_tomorrow()
     return {
         "today_visit_count": visit_count,
         "total_medicines": med_count,
-        "pending_orders": order_count
+        "pending_orders": order_count,
+        "reminder_count": len(reminders)
     }
 
 @router.get("/monthly")
