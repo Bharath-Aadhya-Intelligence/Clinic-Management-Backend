@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Request
 from typing import List, Dict, Any
 from datetime import datetime
 from ...services.patient import patient_service
@@ -6,12 +6,14 @@ from ...services.medicine import medicine_service
 from ...services.order import order_service
 from ...services.report import report_service
 from ...api.deps import get_current_admin
+from ...core.rate_limit import limiter
 from ...models.patient import PatientOut
 
 router = APIRouter()
 
 @router.get("/today")
-async def get_today_stats(current_admin: dict = Depends(get_current_admin)):
+@limiter.limit("30/minute")
+async def get_today_stats(request: Request, current_admin: dict = Depends(get_current_admin)):
     visit_count = await patient_service.get_today_visit_count()
     med_count = await medicine_service.get_count()
     order_count = await order_service.get_count({"status": "Pending"})
@@ -24,7 +26,8 @@ async def get_today_stats(current_admin: dict = Depends(get_current_admin)):
     }
 
 @router.get("/monthly")
-async def get_monthly_stats(current_admin: dict = Depends(get_current_admin)):
+@limiter.limit("30/minute")
+async def get_monthly_stats(request: Request, current_admin: dict = Depends(get_current_admin)):
     total = await patient_service.get_monthly_visit_count()
     breakdown = await patient_service.get_monthly_visit_breakdown()
     return {

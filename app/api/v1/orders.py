@@ -1,17 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from typing import List, Optional
 from ...services.order import order_service
 from ...models.order import OrderOut, OrderCreate, OrderUpdate
 from ...api.deps import get_current_admin
+from ...core.rate_limit import limiter
 
 router = APIRouter()
 
 @router.post("/", response_model=OrderOut, status_code=status.HTTP_201_CREATED)
-async def place_order(order: OrderCreate):
+@limiter.limit("10/minute")
+async def place_order(request: Request, order: OrderCreate):
     return await order_service.create_order(order.dict())
 
 @router.get("/admin", response_model=List[OrderOut])
-async def list_orders_admin(current_admin: dict = Depends(get_current_admin)):
+@limiter.limit("30/minute")
+async def list_orders_admin(request: Request, current_admin: dict = Depends(get_current_admin)):
     return await order_service.get_all()
 
 @router.delete("/admin/clear-all", status_code=status.HTTP_204_NO_CONTENT)

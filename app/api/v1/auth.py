@@ -4,11 +4,15 @@ from ...core.security import verify_password, create_access_token, create_refres
 from ...core.config import settings
 from ...services.admin import admin_service
 from ...models.admin import Token
+from ...core.rate_limit import limiter
+from fastapi import Request
 
 router = APIRouter()
 
 @router.post("/login", response_model=Token)
+@limiter.limit("5/minute")
 async def login_for_access_token(
+    request: Request,
     email: str = Form(...),
     password: str = Form(...)
 ):

@@ -1,29 +1,34 @@
-from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile, Form, Request
 from typing import List, Optional
 from ...services.medicine import medicine_service
 from ...models.medicine import MedicineOut, MedicineCreate, MedicineUpdate
 from ...api.deps import get_current_admin
+from ...core.rate_limit import limiter
 from ...utils.image_handler import compress_image, delete_image, get_image_base64
 import json
 
 router = APIRouter()
 
 @router.get("/", response_model=List[MedicineOut])
-async def list_medicines():
+@limiter.limit("60/minute")
+async def list_medicines(request: Request):
     medicines = await medicine_service.get_active_medicines()
     # Add full image URL if needed, but for now we just return the filename
     # Frontend can prepend the static URL
     return medicines
 
 @router.get("/{id}", response_model=MedicineOut)
-async def get_medicine(id: str):
+@limiter.limit("60/minute")
+async def get_medicine(request: Request, id: str):
     medicine = await medicine_service.get_by_id(id)
     if not medicine:
         raise HTTPException(status_code=404, detail="Medicine not found")
     return medicine
 
 @router.post("/admin", response_model=MedicineOut, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/minute")
 async def create_medicine_admin(
+    request: Request,
     name: str = Form(...),
     price: float = Form(...),
     description: Optional[str] = Form(None),

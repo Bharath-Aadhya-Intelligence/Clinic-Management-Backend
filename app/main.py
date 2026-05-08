@@ -4,12 +4,21 @@ from fastapi.staticfiles import StaticFiles
 from app.core.db import connect_to_mongo, close_mongo_connection
 from app.core.config import settings
 import os
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from app.core.rate_limit import limiter
 
 app = FastAPI(
     title="Homeopathy Hospital Management System API",
     version="1.0.0",
     description="Backend API for Homeopathy Hospital Management System"
 )
+
+# Add SlowAPI state and middleware
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 # CORS Middleware
 app.add_middleware(

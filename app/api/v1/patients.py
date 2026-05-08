@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from typing import List, Optional
 from datetime import date
 from ...services.patient import patient_service
 from ...models.patient import PatientOut, PatientCreate, PatientUpdate, ReferralSource
 from ...api.deps import get_current_admin
+from ...core.rate_limit import limiter
 
 router = APIRouter()
 
@@ -12,13 +13,15 @@ async def get_referral_sources():
     return [source.value for source in ReferralSource]
 
 @router.get("/", response_model=List[PatientOut])
-async def list_patients(visit_date: Optional[date] = None, current_admin: dict = Depends(get_current_admin)):
+@limiter.limit("60/minute")
+async def list_patients(request: Request, visit_date: Optional[date] = None, current_admin: dict = Depends(get_current_admin)):
     if visit_date:
         return await patient_service.get_patients_by_visit_date(visit_date)
     return await patient_service.get_all()
 
 @router.get("/{id}", response_model=PatientOut)
-async def get_patient(id: str, current_admin: dict = Depends(get_current_admin)):
+@limiter.limit("60/minute")
+async def get_patient(request: Request, id: str, current_admin: dict = Depends(get_current_admin)):
     patient = await patient_service.get_by_id(id)
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
